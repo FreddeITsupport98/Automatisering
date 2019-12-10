@@ -11,21 +11,21 @@ row = ""
 
 # def generatePass(length=):
 
-def getFileLocation():
+def getFileLocation(): # Skriv in namnet på CSV fil för att kunna läsa in uppgifterna om användarna som ska skapas
     working = False
     while working == False:
         print('Skriv sökvägen till CSV filen.')
         csvLocation = input("csv: ")
         if os.path.isfile(csvLocation) == False:
-            print("Filen existerar inte, vänligen testa igen.")
+            print("Filen existerar inte, vänligen testa igen.") # Om CSV filen inte finns eller inte hittas, får du försöka igen
         elif os.path.isfile(csvLocation) == True:
-            print("Filen existerar.")
+            print("Filen existerar.") # CSV filen läses in och du får fortsätta i programmet
             working = True
             return csvLocation
         else:
-            print("gg")
+            print("gg") # Ifall du skriver fel någonstans så får du också försöka igen
 
-def passwordGen(length=8):
+def passwordGen(length=8): #Lösenordsgeneratorn
     password = ''
     password += random.choice(chars)
     password += random.choice(chars1)
