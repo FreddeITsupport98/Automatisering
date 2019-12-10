@@ -14,12 +14,12 @@ row = ""
 def getFileLocation(): # Skriv in namnet på CSV fil för att kunna läsa in uppgifterna om användarna som ska skapas
     working = False
     while working == False:
-        print('Skriv sökvägen till CSV filen.')
+        print('Skriv namnet på CSV filen.')
         csvLocation = input("csv: ")
         if os.path.isfile(csvLocation) == False:
             print("Filen existerar inte, vänligen testa igen.") # Om CSV filen inte finns eller inte hittas, får du försöka igen
         elif os.path.isfile(csvLocation) == True:
-            print("Filen existerar.") # CSV filen läses in och du får fortsätta i programmet
+            print("Filen existerar och har lästs in!") # CSV filen har lästs in och du får fortsätta i programmet
             working = True
             return csvLocation
         else:
@@ -45,23 +45,23 @@ def passwordGen(length=8): #Lösenordsgeneratorn
     
     return password
 
-def addUser(opsy = osys):
+def addUser(opsy = osys): #Lägger till användare till AD i linux
     if opsy == 'Linux' or opsy == 'Linux2':
         cmd = f'sudo useradd --password {passwordGen()} -c "{row["first_name"]} {row["last_name"]}" -m {row["first_name"]}.{row["last_name"]}' #useradd --password Lösenord -c “Shrek Ogre” -m S.Ogre
         returnedDelValue = subprocess.call(cmd)
-    else:
+    else: # Om du inte kör linux kör den detta istället
         cmd = f'New-ADUser -Name "{row["first_name"]} {row["last_name"]}" -GivenName "{row["first_name"]}" -Surname "{row["last_name"]}" -SamAccountName "{row["SamAccountName"]}" -AccountPassword (ConvertTo-SecureString "{passwordGen()}" -AsPlainText -force) -passThru -ChangePasswordAtLogon $True'
         print(cmd)
         returnedValue = subprocess.call(['powershell', cmd])
     if returnedValue >= 1:
         print(f"Något gick fel.\nReturned Value: {returnedValue}")
 
-def deleteUser(opsy= osys):
+def deleteUser(opsy= osys): # Linux
     if opsy == 'Linux' or opsy == 'Linux2':
         print(f'Deleting {row["delete_user"]}')
         cmd = f'sudo userdel -r "${row["delete_user"]}"'
         returnedDelValue = subprocess.call(cmd)
-    else:
+    else: # Allt förutom linux
         cmd = f'Remove-ADUser -Identity {delRow["delete_user"]} -Confirm:$false'
         print(f'Tar bort konto {delRow["delete_user"]}')
         returnedDelValue = subprocess.call(['powershell', cmd])
@@ -70,7 +70,7 @@ def deleteUser(opsy= osys):
 
 print(f'Välkommen,\nDu kör operativsystemet {osys}.\nNotera: Denna kod fungerar endast för Linux och Windows.')
 
-while running:
+while running: # Menyn du ser när du kommer in i programmet
     if meny == 0:
         try:
             print("\nMeny\nLägg till användare [1]\nRadera användare [2]\nAvsluta [3]")
@@ -78,10 +78,10 @@ while running:
             if  meny == 0 or meny >= 4:
                 print("Välj ett av de tillgänliga alternativen.")
                 meny = 0
-        except:
+        except: # Ifall du skriver fel någonstans
             print("Välj ett av de tillgänliga alternativen.")
             meny = 0
-    if meny == 1:
+    if meny == 1: # Lägger till användare till AD med info från CSV fil
         correctCSVLocation = getFileLocation()
         with open (correctCSVLocation, newline='') as csvFile:
             readFile = csv.DictReader(csvFile)
@@ -89,7 +89,7 @@ while running:
                 addUser()
         meny = 0
     
-    if meny == 2:
+    if meny == 2: # Tar bort användare från AD med info från den angivna CSV filen
         correctCSVLocation = getFileLocation()
         with open (correctCSVLocation, newline='', encoding="utf-8") as csvFileDel:
             delReadFile = csv.DictReader(csvFileDel)
@@ -97,5 +97,5 @@ while running:
                 deleteUser()
         meny = 0
 
-    if meny == 3:
+    if meny == 3: # Stänger av
         running = False
